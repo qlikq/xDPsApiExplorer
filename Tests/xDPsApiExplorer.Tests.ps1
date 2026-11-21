@@ -31,7 +31,7 @@ Describe 'xDPsApiExplorer Built Module (PoshCode ModuleBuilder + Native UML Engi
             $manifest = Test-ModuleManifest -Path $script:ManifestPath
             $manifest | Should -Not -BeNullOrEmpty
             $manifest.Name | Should -Be 'xDPsApiExplorer'
-            $manifest.ProjectUri.ToString() | Should -Match '^https://xdlabs\.info'
+            $manifest.ProjectUri.ToString() | Should -Match '^https://github\.com/qlikq/xDPsApiExplorer'
             $manifest.LicenseUri.ToString() | Should -Be 'https://github.com/qlikq/xDPsApiExplorer/blob/main/LICENSE'
             ($manifest.Tags -contains 'VMware') | Should -BeTrue
             ($manifest.Tags -contains 'PowerCLI') | Should -BeTrue

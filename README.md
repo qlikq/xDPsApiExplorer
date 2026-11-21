@@ -48,7 +48,7 @@ The module is compiled into a single optimized distributable package using **Pos
 | :--- | :--- |
 | **Build Tool** | PoshCode `ModuleBuilder` `v3.2.18` (`Build-Module`) |
 | **Test Framework** | `Pester` `v6.2.0` |
-| **Module Version** | `1.0.1` |
+| **Module Version** | `1.0.2` |
 | **Total Tests** | **15 Passed**, 0 Failed, 0 Skipped |
 | **Total Duration** | `3.73s` |
 

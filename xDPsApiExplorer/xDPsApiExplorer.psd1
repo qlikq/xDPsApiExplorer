@@ -1,12 +1,12 @@
 ﻿@{
     RootModule           = 'xDPsApiExplorer.psm1'
-    ModuleVersion        = '1.0.1'
+    ModuleVersion        = '1.0.2'
     CompatiblePSEditions = @('Desktop', 'Core')
     GUID                 = 'a18f40d2-9c5b-4e82-84b7-11d85a9e0101'
     Author               = 'Grzegorz Kulikowski (xDlabs)'
     CompanyName          = 'xDlabs (https://xdlabs.info)'
     Copyright            = '(c) 2026 Grzegorz Kulikowski / xDlabs (https://xdlabs.info). All rights reserved.'
-    Description          = 'Interactive 100% offline API & Object Graph Explorer for PowerShell and VMware PowerCLI / vSphere Web Services SDK. Features live instance inspection, .NET reflection schema for $null properties, embedded Broadcom vSphere SDK documentation, interactive Where-Object (?{ }) filter builder, MoRef Get-View helpers, and Pinned Boxes dock.'
+    Description          = 'Interactive 100% offline API & Object Graph Explorer for PowerShell and VMware PowerCLI / vSphere Web Services SDK with interactive Where-Object (?{ }) filter builder.'
     PowerShellVersion    = '5.1'
     FunctionsToExport    = @('Show-ApiContext')
     CmdletsToExport      = @()
@@ -31,10 +31,10 @@
                 'Linux',
                 'MacOS'
             )
-            ProjectUri   = 'https://xdlabs.info'
+            ProjectUri   = 'https://github.com/qlikq/xDPsApiExplorer'
             LicenseUri   = 'https://github.com/qlikq/xDPsApiExplorer/blob/main/LICENSE'
             ReleaseNotes = @'
-xDPsApiExplorer 1.0.1 by xDlabs (https://xdlabs.info)
+xDPsApiExplorer 1.0.2 by xDlabs (https://xdlabs.info)
 - Interactive 100% offline HTML5 API & Object Graph Explorer (Show-ApiContext / Show-ApiGraph / sac).
 - Deep object graph inspection (-MaxDepth 1..10) combining live PowerShell instance values with .NET Reflection schema for $null properties.
 - Embedded offline Broadcom vSphere Web Services SDK documentation (4,880+ types, properties, and methods) with expandable [+] descriptions.
