@@ -1,0 +1,4 @@
+# ModuleBuilder compiled output & Pester test results
+output/
+TestResults.xml
+*.nupkg
