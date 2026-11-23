@@ -53,6 +53,19 @@ Describe 'xDPsApiExplorer Built Module (PoshCode ModuleBuilder + Native UML Engi
             $alias1.ResolvedCommandName | Should -Be 'Show-ApiContext'
             $alias2.ResolvedCommandName | Should -Be 'Show-ApiContext'
         }
+
+        It 'Has a valid Authenticode digital signature from xDlabs Grzegorz Kulikowski on compiled .psd1 and .psm1' {
+            $builtDir = Split-Path -Path $script:ManifestPath -Parent
+            $psm1Path = Join-Path $builtDir 'xDPsApiExplorer.psm1'
+
+            $psd1Sig = Get-AuthenticodeSignature -FilePath $script:ManifestPath
+            $psm1Sig = Get-AuthenticodeSignature -FilePath $psm1Path
+
+            $psd1Sig.Status.ToString() | Should -Be 'Valid'
+            $psd1Sig.SignerCertificate.Subject | Should -Match 'xDlabs Grzegorz Kulikowski'
+            $psm1Sig.Status.ToString() | Should -Be 'Valid'
+            $psm1Sig.SignerCertificate.Subject | Should -Match 'xDlabs Grzegorz Kulikowski'
+        }
     }
 
     Context 'Parameter Validation (-MaxDepth 1..10)' {

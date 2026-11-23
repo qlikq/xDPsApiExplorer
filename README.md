@@ -1,7 +1,8 @@
 # xDPsApiExplorer
 
 ![ModuleBuilder](https://img.shields.io/badge/ModuleBuilder-v3.2.18%20Passing-22c55e)
-![Pester Tests](https://img.shields.io/badge/Pester%20v6.2.0-15%2F15%20Passed-22c55e)
+![Pester Tests](https://img.shields.io/badge/Pester%20v6.2.0-16%2F16%20Passed-22c55e)
+![Authenticode](https://img.shields.io/badge/Authenticode-Signed%20%28xDlabs%29-22c55e)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207%2B-06b6d4)
 ![License](https://img.shields.io/badge/License-MIT-3b82f6)
 
@@ -48,9 +49,10 @@ The module is compiled into a single optimized distributable package using **Pos
 | Metric | Value |
 | :--- | :--- |
 | **Build Tool** | PoshCode `ModuleBuilder` `v3.2.18` (`Build-Module`) |
+| **Code Signing** | `Certum Code Signing 2021 CA` (`CN=xDlabs Grzegorz Kulikowski`, SHA256 + RFC3161 Timestamp) |
 | **Test Framework** | `Pester` `v6.2.0` |
-| **Module Version** | `1.0.2` |
-| **Total Tests** | **15 Passed**, 0 Failed, 0 Skipped |
+| **Module Version** | `1.0.3` |
+| **Total Tests** | **16 Passed**, 0 Failed, 0 Skipped |
 | **Total Duration** | `3.73s` |
 
 ### Unit Test Suite Results (`Tests/xDPsApiExplorer.Tests.ps1`)
@@ -60,6 +62,7 @@ The module is compiled into a single optimized distributable package using **Pos
 | **Packaging & Manifest** | Produces a valid compiled module manifest with `LicenseUri` and `ProjectUri` | ✅ Passed | `261ms` |
 | **Packaging & Manifest** | Copies `Data/vSphereApiDocs.json`, `README.md`, and `LICENSE` into built module output | ✅ Passed | `14ms` |
 | **Packaging & Manifest** | Exports `Show-ApiContext` and convenience aliases `Show-ApiGraph` and `sac` | ✅ Passed | `29ms` |
+| **Packaging & Manifest** | Has a valid Authenticode digital signature from `xDlabs Grzegorz Kulikowski` on compiled `.psd1` and `.psm1` | ✅ Passed | `35ms` |
 | **Parameter Validation** | Rejects `-MaxDepth 0` (below minimum) | ✅ Passed | `74ms` |
 | **Parameter Validation** | Rejects `-MaxDepth 11` (above maximum) | ✅ Passed | `21ms` |
 | **Deep Inspection & Engine** | Detects variable name `$myVM` from the pipeline and uses full `.NET` type names | ✅ Passed | `420ms` |
@@ -74,38 +77,44 @@ The module is compiled into a single optimized distributable package using **Pos
 | **Deep Inspection & Engine** | Inspects properties (`Length`) and methods (`Substring`, `Replace`) when a simple type like `[System.String]` is passed as root object | ✅ Passed | `71ms` |
 
 <details>
-<summary><strong>View Raw Console Output (<code>./build.ps1 -Task Clean, Build, Test</code>)</strong></summary>
+<summary><strong>View Raw Console Output (<code>./build.ps1 -Task Clean, Build, Sign, Test</code>)</strong></summary>
 
 ```text
 ==> [Clean] Removing output directory...
 ==> [Build] Building xDPsApiExplorer with PoshCode ModuleBuilder...
-    Built module: xDPsApiExplorer v1.0.0 -> output\xDPsApiExplorer\1.0.0
+    Built module: xDPsApiExplorer v1.0.3 -> output\xDPsApiExplorer\1.0.3
+==> [Sign] Signing compiled module with xDlabs Code Signing Certificate...
+    Signing xDPsApiExplorer.psd1 [Thumbprint: 36B7A51BCAE481C66ACECF4F7CF7BADAEA7D8D81]...
+    Verified signature on xDPsApiExplorer.psd1: Valid (CN=xDlabs Grzegorz Kulikowski, O=xDlabs Grzegorz Kulikowski, L=Gdańsk, S=pomorskie, C=PL)
+    Signing xDPsApiExplorer.psm1 [Thumbprint: 36B7A51BCAE481C66ACECF4F7CF7BADAEA7D8D81]...
+    Verified signature on xDPsApiExplorer.psm1: Valid (CN=xDlabs Grzegorz Kulikowski, O=xDlabs Grzegorz Kulikowski, L=Gdańsk, S=pomorskie, C=PL)
 ==> [Test] Running Pester 6.x unit tests...
 Pester v6.2.0
 
 Running tests from 'Tests\xDPsApiExplorer.Tests.ps1'
 Describing xDPsApiExplorer Built Module (PoshCode ModuleBuilder + Native UML Engine)
  Context ModuleBuilder Packaging, Manifest Metadata & Exports
-   [+] Produces a valid compiled module manifest with LicenseUri and ProjectUri 261ms
-   [+] Copies Data/vSphereApiDocs.json, README.md, and LICENSE into the built module output 14ms
-   [+] Exports Show-ApiContext and convenience aliases Show-ApiGraph and sac 29ms
+   [+] Produces a valid compiled module manifest with LicenseUri and ProjectUri 271ms
+   [+] Copies Data/vSphereApiDocs.json, README.md, and LICENSE into the built module output 15ms
+   [+] Exports Show-ApiContext and convenience aliases Show-ApiGraph and sac 30ms
+   [+] Has a valid Authenticode digital signature from xDlabs Grzegorz Kulikowski on compiled .psd1 and .psm1 63ms
  Context Parameter Validation (-MaxDepth 1..10)
-   [+] Rejects -MaxDepth 0 (below minimum) 74ms
-   [+] Rejects -MaxDepth 11 (above maximum) 21ms
+   [+] Rejects -MaxDepth 0 (below minimum) 62ms
+   [+] Rejects -MaxDepth 11 (above maximum) 23ms
  Context Full .NET Type Names, Pipeline Variable Detection & Deep Inspection
-   [+] Detects variable name $myVM from the pipeline and uses full .NET type names 420ms
-   [+] Reflects .NET schema even for $null properties (GuestSummary) with full type name 155ms
-   [+] Unwraps polymorphic arrays without wasting MaxDepth and includes inline element previews 136ms
-   [+] Detects VMware ManagedObjectReference (MoRef) and builds Get-View helper command 104ms
-   [+] Collects API methods with full .NET parameter and return type signatures 141ms
-   [+] Marks TruncatedByDepth = true when complex child objects exceed MaxDepth 125ms
-   [+] Safely handles cyclic object references without infinite recursion 144ms
-   [+] Attaches official Broadcom vSphere SDK offline documentation descriptions to types, properties, and methods 134ms
-   [+] Generates a 100% self-contained offline HTML file with Where-Object (?{ }) filter builder, Hide Unmatched, Panel Resizer, Pinned Boxes (0/5), and [Type] notation 297ms
-   [+] Inspects properties (Length) and methods (Substring, Replace) when a simple type like [System.String] is passed as root object 71ms
-Tests completed in 3.73s
-Tests Passed: 15, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 0
-    All 15 Pester 6.x unit tests passed!
+   [+] Detects variable name $myVM from the pipeline and uses full .NET type names 428ms
+   [+] Reflects .NET schema even for $null properties (GuestSummary) with full type name 115ms
+   [+] Unwraps polymorphic arrays without wasting MaxDepth and includes inline element previews 130ms
+   [+] Detects VMware ManagedObjectReference (MoRef) and builds Get-View helper command 102ms
+   [+] Collects API methods with full .NET parameter and return type signatures 86ms
+   [+] Marks TruncatedByDepth = true when complex child objects exceed MaxDepth 80ms
+   [+] Safely handles cyclic object references without infinite recursion 102ms
+   [+] Attaches official Broadcom vSphere SDK offline documentation descriptions to types, properties, and methods 88ms
+   [+] Generates a 100% self-contained offline HTML file with Where-Object (?{ }) filter builder, Hide Unmatched, Panel Resizer, Pinned Boxes (0/5), and [Type] notation 251ms
+   [+] Inspects properties (Length) and methods (Substring, Replace) when a simple type like [System.String] is passed as root object 72ms
+Tests completed in 3.49s
+Tests Passed: 16, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 0
+    All 16 Pester 6.x unit tests passed!
 ```
 
 </details>

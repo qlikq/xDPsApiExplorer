@@ -3,26 +3,33 @@
     Build, test, and publish script for xDPsApiExplorer utilizing PoshCode ModuleBuilder and Pester 6.x.
 
 .DESCRIPTION
-    Designed for local development and GitHub Actions CI/CD pipelines:
+    Designed for local development and CI/CD release pipelines:
     - Clean   : Removes the ./output directory.
     - Build   : Compiles the module using PoshCode ModuleBuilder (Build-Module) from ./xDPsApiExplorer/build.psd1.
-    - Test    : Runs Pester 6.x unit tests against the compiled module in ./output/xDPsApiExplorer/<Version>.
-    - Publish : Publishes the compiled module to PowerShell Gallery using -ApiKey (or $env:PSGALLERY_API_KEY).
+    - Sign    : Digitally signs the compiled .psm1 and .psd1 files with the xDlabs Certum Code Signing certificate.
+    - Test    : Runs Pester 6.x unit tests (including Authenticode signature verification) against ./output/xDPsApiExplorer/<Version>.
+    - Publish : Publishes the signed compiled module to PowerShell Gallery using -ApiKey (or $env:PSGALLERY_API_KEY).
 
 .EXAMPLE
-    ./build.ps1 -Task Build, Test
+    ./build.ps1 -Task Clean, Build, Sign, Test
 
 .EXAMPLE
-    ./build.ps1 -Task Build, Test, Publish -ApiKey $env:PSGALLERY_API_KEY
+    ./build.ps1 -Task Clean, Build, Sign, Test, Publish -SemVer 1.0.3
 #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $false)]
-    [ValidateSet('Clean', 'Build', 'Test', 'Publish')]
-    [string[]]$Task = @('Build', 'Test'),
+    [ValidateSet('Clean', 'Build', 'Sign', 'Test', 'Publish')]
+    [string[]]$Task = @('Build', 'Sign', 'Test'),
 
     [Parameter(Mandatory = $false)]
     [string]$SemVer,
+
+    [Parameter(Mandatory = $false)]
+    [string]$CertThumbprint = '36B7A51BCAE481C66ACECF4F7CF7BADAEA7D8D81',
+
+    [Parameter(Mandatory = $false)]
+    [string]$TimestampServer = 'http://time.certum.pl',
 
     [Parameter(Mandatory = $false)]
     [string]$ApiKey = $(
@@ -92,6 +99,46 @@ if ($Task -contains 'Build') {
 
     $builtModuleInfo = Build-Module @buildParams
     Write-Host "    Built module: $($builtModuleInfo.Name) v$($builtModuleInfo.Version) -> $($builtModuleInfo.ModuleBase)" -ForegroundColor Green
+}
+
+if ($Task -contains 'Sign') {
+    Write-Host '==> [Sign] Signing compiled module with xDlabs Code Signing Certificate...' -ForegroundColor Cyan
+    $targetDir = if ($null -ne $builtModuleInfo) {
+        $builtModuleInfo.ModuleBase
+    } else {
+        Get-LatestBuiltModuleDirectory
+    }
+
+    if ([string]::IsNullOrWhiteSpace($targetDir) -or -not (Test-Path -LiteralPath $targetDir)) {
+        throw 'Built module directory not found in ./output. Run with -Task Build first.'
+    }
+
+    $cert = Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert -ErrorAction SilentlyContinue |
+        Where-Object { $_.Thumbprint -eq $CertThumbprint -or $_.Subject -like '*xDlabs Grzegorz Kulikowski*' } |
+        Select-Object -First 1
+
+    if ($null -eq $cert) {
+        throw "Code Signing Certificate ($CertThumbprint / xDlabs Grzegorz Kulikowski) was not found in Cert:\CurrentUser\My. Ensure SimplySign Desktop is running and connected."
+    }
+    if (-not $cert.HasPrivateKey) {
+        throw "Code Signing Certificate '$($cert.Subject)' does not have an active private key handle. Ensure SimplySign Desktop is logged in."
+    }
+
+    $filesToSign = Get-ChildItem -Path $targetDir -Include '*.psm1', '*.psd1', '*.ps1' -Recurse -File
+    foreach ($file in $filesToSign) {
+        Write-Host "    Signing $($file.Name) [Thumbprint: $($cert.Thumbprint)]..." -ForegroundColor Cyan
+        $sigResult = Set-AuthenticodeSignature `
+            -FilePath $file.FullName `
+            -Certificate $cert `
+            -TimestampServer $TimestampServer `
+            -HashAlgorithm SHA256 `
+            -IncludeChain All
+
+        if ($sigResult.Status -ne 'Valid') {
+            throw "Authenticode signing failed for '$($file.FullName)': $($sigResult.Status) - $($sigResult.StatusMessage)"
+        }
+        Write-Host "    Verified signature on $($file.Name): $($sigResult.Status) ($($sigResult.SignerCertificate.Subject))" -ForegroundColor Green
+    }
 }
 
 if ($Task -contains 'Test') {
