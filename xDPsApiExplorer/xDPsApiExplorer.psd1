@@ -1,6 +1,6 @@
 ﻿@{
     RootModule           = 'xDPsApiExplorer.psm1'
-    ModuleVersion        = '1.0.3'
+    ModuleVersion        = '1.1.0'
     CompatiblePSEditions = @('Desktop', 'Core')
     GUID                 = 'a18f40d2-9c5b-4e82-84b7-11d85a9e0101'
     Author               = 'Grzegorz Kulikowski (xDlabs)'
@@ -34,7 +34,8 @@
             ProjectUri   = 'https://github.com/qlikq/xDPsApiExplorer'
             LicenseUri   = 'https://github.com/qlikq/xDPsApiExplorer/blob/main/LICENSE'
             ReleaseNotes = @'
-xDPsApiExplorer 1.0.3 by xDlabs (https://xdlabs.info)
+xDPsApiExplorer 1.1.0 by xDlabs (https://xdlabs.info)
+- Added 2-Object Comparison Mode ($obj1, $obj2 | Show-ApiContext): side-by-side deep property diff table with ShowDifferent, Value Differences, and IncludeEqual filters, array count & missing element detection, and section filtering.
 - Digitally signed with the official xDlabs Grzegorz Kulikowski (Certum Code Signing CA) Authenticode certificate.
 - Interactive 100% offline HTML5 API & Object Graph Explorer (Show-ApiContext / Show-ApiGraph / sac).
 - Deep object graph inspection (-MaxDepth 1..10) combining live PowerShell instance values with .NET Reflection schema for $null properties.

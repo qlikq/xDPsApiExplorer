@@ -203,7 +203,7 @@ Describe 'xDPsApiExplorer Built Module (PoshCode ModuleBuilder + Native UML Engi
             $html | Should -Match 'panelResizer'
             $html | Should -Match 'renderExpandableDocHtml'
             ($html -match '&laquo;') | Should -BeFalse
-            $html | Should -Match '<span class="brand-logo">xDlabs</span>'
+            $html | Should -Match '<span class="brand-logo"[^>]*>xDlabs</span>'
             $html | Should -Match '<span class="brand-title">ApiExplorer</span>'
             ($html -match 'Native UML Box-Tree') | Should -BeFalse
             $html | Should -Match 'userClickedNode'
@@ -222,6 +222,33 @@ Describe 'xDPsApiExplorer Built Module (PoshCode ModuleBuilder + Native UML Engi
             $lenProp.Value | Should -Be '9'
             ($res.NodeTree.Methods | Where-Object { $_.Name -eq 'Substring' }) | Should -Not -BeNullOrEmpty
             ($res.NodeTree.Methods | Where-Object { $_.Name -eq 'Replace' }) | Should -Not -BeNullOrEmpty
+        }
+    }
+
+    Context '2-Object Comparison Mode & Validation' {
+        It 'Switches to Comparison Mode when 2 objects of the same type are passed and renders ShowDifferent and IncludeEqual filters' {
+            $vm1 = New-MockVirtualMachineView
+            $vm2 = New-MockVirtualMachineView
+            $vm2.Name = 'prod-web-02'
+            $vm2.Runtime.PowerState = 'poweredOff'
+
+            $res = $vm1, $vm2 | Show-ApiContext -MaxDepth 4 -NoBrowser -PassThru
+            $res.IsCompareMode | Should -BeTrue
+            $res.DiffCount | Should -BeGreaterThan 0
+
+            $html = [System.IO.File]::ReadAllText($res.HtmlPath)
+            $html | Should -Match 'OBJECT COMPARISON MODE'
+            $html | Should -Match 'ShowDifferent'
+            $html | Should -Match 'IncludeEqual'
+            $html | Should -Match 'poweredOff'
+        }
+
+        It 'Throws a terminating error when 2 objects of different types are passed' {
+            { 'test123', 2 | Show-ApiContext -NoBrowser } | Should -Throw
+        }
+
+        It 'Throws a terminating error when more than 2 objects are passed' {
+            { 'a', 'b', 'c' | Show-ApiContext -NoBrowser } | Should -Throw
         }
     }
 }
