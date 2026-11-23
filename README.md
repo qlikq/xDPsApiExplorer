@@ -7,7 +7,8 @@
 ![License](https://img.shields.io/badge/License-MIT-3b82f6)
 
 **xDPsApiExplorer** by [xDlabs](https://xdlabs.info) Grzegorz Kulikowski is an interactive, **100% offline** API & Object Graph Explorer for PowerShell and VMware PowerCLI / vSphere Web Services SDK.
-<img width="1280" height="646" alt="1794846369765" src="https://github.com/user-attachments/assets/a353179b-0e7c-4085-8343-87b1c7370230" />
+
+<img src="./assets/xDpsapixplorer.gif" alt="xDPsApiExplorer Demo" width="1280" />
 
 ## Features
 
