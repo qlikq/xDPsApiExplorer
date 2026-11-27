@@ -223,6 +223,25 @@ Describe 'xDPsApiExplorer Built Module (PoshCode ModuleBuilder + Native UML Engi
             ($res.NodeTree.Methods | Where-Object { $_.Name -eq 'Substring' }) | Should -Not -BeNullOrEmpty
             ($res.NodeTree.Methods | Where-Object { $_.Name -eq 'Replace' }) | Should -Not -BeNullOrEmpty
         }
+
+        It 'Inspects nested ConvertFrom-Json PSCustomObject hierarchies and arrays without false cycle detection' {
+            $json = '{"groups":[{"id":"g1","timing":{"start":"now"},"virtual_machines":[{"id":"i-2e96ed57","name":"vm1","cpus":4}]}]}'
+            $data = ($json | ConvertFrom-Json).groups
+            $res = $data | Show-ApiContext -MaxDepth 5 -NoBrowser -PassThru
+
+            $g0 = if ($res.NodeTree.IsCollection) { $res.NodeTree.Children[0] } else { $res.NodeTree }
+            $timingNode = $g0.Children | Where-Object { $_.Name -eq 'timing' }
+            $timingNode | Should -Not -BeNullOrEmpty
+            $timingNode.IsCycle | Should -BeFalse
+            ($timingNode.Properties | Where-Object { $_.Name -eq 'start' }).Value | Should -Be 'now'
+
+            $vmsNode = $g0.Children | Where-Object { $_.Name -eq 'virtual_machines' }
+            $vm0 = $vmsNode.Children[0]
+            $vm0 | Should -Not -BeNullOrEmpty
+            $vm0.IsCycle | Should -BeFalse
+            ($vm0.Properties | Where-Object { $_.Name -eq 'id' }).Value | Should -Be 'i-2e96ed57'
+            ($vm0.Properties | Where-Object { $_.Name -eq 'cpus' }).Value | Should -Be '4'
+        }
     }
 
     Context '2-Object Comparison Mode & Validation' {

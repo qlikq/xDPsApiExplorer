@@ -1,7 +1,7 @@
 # xDPsApiExplorer
 
 ![ModuleBuilder](https://img.shields.io/badge/ModuleBuilder-v3.2.18%20Passing-22c55e)
-![Pester Tests](https://img.shields.io/badge/Pester%20v6.2.0-19%2F19%20Passed-22c55e)
+![Pester Tests](https://img.shields.io/badge/Pester%20v6.2.0-20%2F20%20Passed-22c55e)
 ![Authenticode](https://img.shields.io/badge/Authenticode-Signed%20%28xDlabs%29-22c55e)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207%2B-06b6d4)
 ![License](https://img.shields.io/badge/License-MIT-3b82f6)
@@ -53,9 +53,9 @@ The module is compiled into a single optimized distributable package using **Pos
 | **Build Tool** | PoshCode `ModuleBuilder` `v3.2.18` (`Build-Module`) |
 | **Code Signing** | `Certum Code Signing 2021 CA` (`CN=xDlabs Grzegorz Kulikowski`, SHA256 + RFC3161 Timestamp) |
 | **Test Framework** | `Pester` `v6.2.0` |
-| **Module Version** | `1.1.0` |
-| **Total Tests** | **19 Passed**, 0 Failed, 0 Skipped |
-| **Total Duration** | `3.85s` |
+| **Module Version** | `1.1.1` |
+| **Total Tests** | **20 Passed**, 0 Failed, 0 Skipped |
+| **Total Duration** | `3.20s` |
 
 ### Unit Test Suite Results (`Tests/xDPsApiExplorer.Tests.ps1`)
 
@@ -77,6 +77,7 @@ The module is compiled into a single optimized distributable package using **Pos
 | **Deep Inspection & Engine** | Attaches official Broadcom vSphere SDK offline documentation descriptions to types, properties, and methods | ✅ Passed | `134ms` |
 | **Deep Inspection & Engine** | Generates a 100% self-contained offline HTML file with `Where-Object (?{ })` filter builder, `Hide Unmatched`, Panel Resizer, Pinned Boxes (`0/5`), and `[Type]` notation | ✅ Passed | `297ms` |
 | **Deep Inspection & Engine** | Inspects properties (`Length`) and methods (`Substring`, `Replace`) when a simple type like `[System.String]` is passed as root object | ✅ Passed | `71ms` |
+| **Deep Inspection & Engine** | Inspects nested `ConvertFrom-Json` `PSCustomObject` hierarchies and arrays without false cycle detection | ✅ Passed | `74ms` |
 | **2-Object Comparison Mode** | Switches to Comparison Mode when 2 objects of the same type are passed and renders `ShowDifferent` and `IncludeEqual` filters | ✅ Passed | `310ms` |
 | **2-Object Comparison Mode** | Throws a terminating error when 2 objects of different types are passed | ✅ Passed | `18ms` |
 | **2-Object Comparison Mode** | Throws a terminating error when more than 2 objects are passed | ✅ Passed | `12ms` |

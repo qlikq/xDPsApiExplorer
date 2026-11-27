@@ -42,11 +42,11 @@ function ConvertTo-ApiNodeTree {
         $VisitedIds = New-Object 'System.Collections.Generic.HashSet[int]'
     }
 
-    # Unwrap PSObject if needed
+    # Unwrap PSObject if needed (never unwrap PSCustomObject, whose BaseObject is a shared singleton)
     $rawObj = $InputObject
     if ($null -ne $rawObj -and $rawObj -is [psobject]) {
         $baseObj = $rawObj.PSObject.BaseObject
-        if ($null -ne $baseObj) {
+        if ($null -ne $baseObj -and $baseObj -isnot [System.Management.Automation.PSCustomObject]) {
             $rawObj = $baseObj
         }
     }
@@ -398,7 +398,7 @@ function ConvertTo-ApiNodeTree {
                         $pName = $pd.Name
                         $pPath = "$PsPath.$pName"
                         $pVal = $pd.Value
-                        if ($null -ne $pVal -and $pVal -is [psobject] -and $null -ne $pVal.PSObject.BaseObject) {
+                        if ($null -ne $pVal -and $pVal -is [psobject] -and $null -ne $pVal.PSObject.BaseObject -and $pVal.PSObject.BaseObject -isnot [System.Management.Automation.PSCustomObject]) {
                             $pVal = $pVal.PSObject.BaseObject
                         }
                         $effectiveType = if ($null -ne $pVal) { $pVal.GetType() } elseif ($null -ne $pd.DeclaredType) { $pd.DeclaredType } else { [object] }
